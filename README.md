@@ -1,0 +1,2 @@
+# BNP_Paribas_Cardif_Claims_Management
+A Kaggle competition
