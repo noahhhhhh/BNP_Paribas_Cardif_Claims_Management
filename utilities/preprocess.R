@@ -152,6 +152,16 @@ Noise <- function(dt, noise_l = -.00001, noise_u = .00001, col_excl){
 ############################################################################################
 ## 7. MyImpute #############################################################################
 ############################################################################################
+## Intro: Impute with median, -1, and amelia
+## Args:
+##  dt(data.table): a data table
+##  cols(a vector of characters): name of targeted columns
+##  imputed_type(a single vector of characters): imputation type
+##  m(integer): amelia only - number of imputation sets
+##  idvars(a vector of characters): column names of identification vars
+##  noms(a vector of characters): column names of nominal vars
+##  ords(a vector of characters): column names of ordinal vars
+## Return(list): output of a list of m imputation sets
 MyImpute <- function(dt, cols, impute_type = c("median", "-1", "amelia"), m, idvars, noms, ords){
     ls.imputed <- list()
     if(impute_type == "median"){ # median impute
