@@ -149,8 +149,37 @@ Noise <- function(dt, noise_l = -.00001, noise_u = .00001, col_excl){
     return(dt)
 }
 
-
-
+############################################################################################
+## 7. MyImpute #############################################################################
+############################################################################################
+MyImpute <- function(dt, cols, impute_type = c("median", "-1", "amelia"), m, idvars, noms, ords){
+    ls.imputed <- list()
+    if(impute_type == "median"){ # median impute
+        require(randomForest)
+        ls.imputed[[1]] <- na.roughfix(dt[, cols, with = F])
+        # set the new names
+        setnames(ls.imputed[[1]], cols, paste(cols, "toImputed", sep = ""))
+    } else if(impute_type == "-1"){ # -1 impute
+        df.imputed <- as.data.frame(dt[, cols, with = F])
+        df.imputed[is.na(df.imputed)] <- -1
+        ls.imputed[[1]] <- as.data.table(df.imputed)
+        # set the new names
+        setnames(ls.imputed[[1]], cols, paste(cols, "toImputed", sep = ""))
+    } else if(impute_type == "amelia"){ # amelia impute
+        require(Amelia)
+        a.out <- amelia(x = dt
+                        , m = m
+                        , p2s = 1
+                        , idvars = idvars
+                        , noms = noms
+                        , ords = ords
+                        , parallel = "multicore"
+                        , ncpus = 8)
+        ls.imputed <- a.out$imputations
+    }
+    
+    return(ls.imputed)
+}
 
 
 

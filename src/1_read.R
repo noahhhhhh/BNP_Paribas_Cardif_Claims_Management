@@ -1,11 +1,11 @@
-setwd("../../Volumes/Data Science/Google Drive/data_science_competition/kaggle/BNP_Paribas_Cardif_Claims_Management/")
+setwd("/Volumes/Data Science/Google Drive/data_science_competition/kaggle/BNP_Paribas_Cardif_Claims_Management/")
 rm(list = ls()); gc();
 require(data.table)
 #######################################################################################
 ## 1.0 read ###########################################################################
 #######################################################################################
-dt.train.raw <- fread("../data/BNP_Paribas_Cardif_Claims_Management/train.csv", stringsAsFactors = T)
-dt.test.raw <- fread("../data/BNP_Paribas_Cardif_Claims_Management/test.csv", stringsAsFactors = T)
+dt.train.raw <- fread("../data/BNP_Paribas_Cardif_Claims_Management/train.csv", stringsAsFactors = T, na.strings = c("NA", ""))
+dt.test.raw <- fread("../data/BNP_Paribas_Cardif_Claims_Management/test.csv", stringsAsFactors = T, na.strings = c("NA", ""))
 dim(dt.train.raw); dim(dt.test.raw)
 # [1] 114321    133
 # [1] 114393    132
