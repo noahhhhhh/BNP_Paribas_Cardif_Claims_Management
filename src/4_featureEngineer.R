@@ -27,3 +27,17 @@ cols.factor <- c(cols.factor, names(dt.encode.factor))
 cols.numeric <- c(cols.numeric, names(dt.encode.numeric))
 dim(dt.imputed)
 # [1] 228714    141
+
+#######################################################################################
+## 2.0 integer 0 ######################################################################
+#######################################################################################
+unlist(lapply(dt.imputed[, cols.integer, with = F], function(x) sum(x == 0, na.rm = T)))
+# v38    v62    v72   v129 
+# 219598  41055   6735 180678 
+vIntegerZero <- rowSums(dt.imputed[, cols.integer, with = F] == 0)
+cols.numeric <- c(cols.numeric, "vIntegerZero")
+dt.imputed[, vIntegerZero := vIntegerZero]
+
+#######################################################################################
+## 3.0 remove linear dependencies #####################################################
+#######################################################################################
