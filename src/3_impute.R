@@ -48,6 +48,7 @@ vNaFactor <- rowSums(is.na(dt.explored[, cols.na.factor, with = F]))
 vNaNumeric <- rowSums(is.na(dt.explored[, cols.na.numeric, with = F]))
 vNa <- rowSums(is.na(dt.explored))
 cols.numeric <- c(cols.numeric, c("vNaFactor", "vNaNumeric", "vNa"))
+cols.newFeatures <- c("vNaFactor", "vNaNumeric", "vNa")
 
 ## impute with median
 ls.imputed <- MyImpute(dt.explored, c(cols.na.numeric, cols.na.factor), impute_type = "median")
@@ -69,5 +70,5 @@ dim(dt.explored)
 ## 2.0 save ###########################################################################
 #######################################################################################
 dt.imputed <- dt.explored
-save(dt.imputed, cols.factor, cols.numeric, cols.integer, file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_imputed.RData")
+save(dt.imputed, cols.factor, cols.numeric, cols.integer, cols.newFeatures, file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_imputed.RData")
 
