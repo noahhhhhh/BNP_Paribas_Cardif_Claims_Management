@@ -2,6 +2,7 @@ setwd("/Volumes/Data Science/Google Drive/data_science_competition/kaggle/BNP_Pa
 rm(list = ls()); gc();
 require(data.table)
 require(purrr)
+require(caret)
 source("utilities/preprocess.R")
 
 load("../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_imputed.RData")
@@ -41,3 +42,32 @@ dt.imputed[, vIntegerZero := vIntegerZero]
 #######################################################################################
 ## 3.0 remove linear dependencies #####################################################
 #######################################################################################
+# categorical variables v91 and v107 seems to be identical only different level names. -- Jesse Burström  
+# findLinearCombos(model.matrix(target ~., dt.imputed))
+# $remove
+# [1]  46  48  51  52  53  54  55  56 192 193 194 195 196 197 200 609 629 637 644 654 661 665 666 670 671 678 679 681 682
+# [30] 683 684 686 690 692 693 694 695 696 697
+## check factor columns are the same
+lapply(dt.imputed[, cols.factor, with = F], function(x) as.vector(table(x)[order(table(x))]))
+# $v91toImputed
+# [1]   449  6375 27035 45274 46327 49223 54031
+# 
+# $v107toImputed
+# [1]   449  6375 27035 45274 46327 49223 54031
+
+## remove $v107toImputed
+dt.imputed[, "v107toImputed" := NULL]
+
+## check numeric columns are the same
+lapply(dt.imputed[, cols.numeric, with = F], function(x) as.vector(summary(x)))
+
+#######################################################################################
+## save ###############################################################################
+#######################################################################################
+dt.featureEngineered <- dt.imputed
+save(dt.featureEngineered, cols.factor, cols.numeric, cols.integer, file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_featureEngineered.RData")
+
+
+
+
+
