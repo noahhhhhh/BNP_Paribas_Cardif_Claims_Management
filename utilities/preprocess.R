@@ -170,7 +170,11 @@ MyImpute <- function(dt, cols, impute_type = c("median", "-1", "amelia"), m, idv
         # set the new names
         setnames(ls.imputed[[1]], cols, paste(cols, "toImputed", sep = ""))
     } else if(impute_type == "-1"){ # -1 impute
+        # class <- unlist(lapply(dt[, cols, with = F], class))
+        # cols.factor <- names(class)[class == "factor"]
+        # cols.others <- names(class)[class != "factor"]
         df.imputed <- as.data.frame(dt[, cols, with = F])
+        # as.data.frame(apply(df.imputed[, cols.factor], 2, as.character))[is.na(df.imputed[, cols.factor])] <- "-1"
         df.imputed[is.na(df.imputed)] <- -1
         ls.imputed[[1]] <- as.data.table(df.imputed)
         # set the new names

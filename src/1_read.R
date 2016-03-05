@@ -4,8 +4,8 @@ require(data.table)
 #######################################################################################
 ## 1.0 read ###########################################################################
 #######################################################################################
-dt.train.raw <- fread("../data/BNP_Paribas_Cardif_Claims_Management/train.csv", stringsAsFactors = T, na.strings = c("NA", ""))
-dt.test.raw <- fread("../data/BNP_Paribas_Cardif_Claims_Management/test.csv", stringsAsFactors = T, na.strings = c("NA", ""))
+dt.train.raw <- fread("../data/BNP_Paribas_Cardif_Claims_Management/train.csv", na.strings = c("NA", ""))
+dt.test.raw <- fread("../data/BNP_Paribas_Cardif_Claims_Management/test.csv", na.strings = c("NA", ""))
 dim(dt.train.raw); dim(dt.test.raw)
 # [1] 114321    133
 # [1] 114393    132

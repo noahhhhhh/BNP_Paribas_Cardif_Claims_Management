@@ -61,7 +61,7 @@ table((class)[!names(class) %in% c("ID", "target")])
 # 19       4     108 
 
 ## save the colmmns by class
-cols.factor <- names(class)[class == "factor"]
+cols.factor <- names(class)[class == "character"]
 cols.numeric <- names(class)[class == "numeric"][names(class)[class == "numeric"] != "target"]
 cols.integer <- names(class)[class == "integer"][names(class)[class == "integer"] != "ID"]
 

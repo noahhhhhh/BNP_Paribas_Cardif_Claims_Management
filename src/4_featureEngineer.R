@@ -31,41 +31,48 @@ cols.factor <- cols.factor[!cols.factor %in% "v107toImputed"]
 lapply(dt.imputed[, cols.numeric, with = F], function(x) as.vector(summary(x)))
 
 #######################################################################################
-## 2.0 basic stats about a row ########################################################
+## 2.0 add basic stats about a row ####################################################
 #######################################################################################
 ## integer
-vIntMean <- rowMeans(dt.imputed[, cols.integer, with = F])
-vIntMax <- apply(dt.imputed[, cols.integer, with = F], 1, max)
-vIntMin <- apply(dt.imputed[, cols.integer, with = F], 1, min)
-vIntSd <- apply(dt.imputed[, cols.integer, with = F], 1, sd)
-cols.numeric <- c(cols.numeric, "vIntMean", "vIntMax", "vIntMin", "vIntSd")
+vIntMean <- rowMeans(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F])
+vIntMax <- apply(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F], 1, max)
+vIntMin <- apply(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F], 1, min)
+vIntSd <- apply(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F], 1, sd)
+
 ## numeric
-vNumMean <- rowMeans(dt.imputed[, cols.numeric, with = F])
-vNumMax <- apply(dt.imputed[, cols.numeric, with = F], 1, max)
-vNumMin <- apply(dt.imputed[, cols.numeric, with = F], 1, min)
-vNumSd <- apply(dt.imputed[, cols.numeric, with = F], 1, sd)
-cols.numeric <- c(cols.numeric, "vNumMean", "vNumMax", "vNumMin", "vNumSd")
+vNumMean <- rowMeans(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F])
+vNumMax <- apply(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F], 1, max)
+vNumMin <- apply(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F], 1, min)
+vNumSd <- apply(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F], 1, sd)
+
 ## factor
 # sum of ranking of individual factor out of range(dt.imputed$v..)
-dt.factorRank <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.factor)
+dt.factorRank <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.factor[! cols.factor %in% cols.newFeatures])
 dt.factorRank <- dt.factorRank[, lapply(.SD, as.numeric)]
 pre.factorRank <- preProcess(dt.factorRank
                              , method = c("range")
                              , verbose = T)
 dt.factorRank.range <- predict(pre.factorRank, dt.factorRank)
 vFactorRankSum <- rowSums(dt.factorRank.range)
-cols.numeric <- c(cols.numeric, "vFactorRankSum")
+
+#######################################################################################
+## 4.0 add integer 0 ##################################################################
+#######################################################################################
+unlist(lapply(dt.imputed[, cols.integer, with = F], function(x) sum(x == 0, na.rm = T)))
+# v38    v62    v72   v129 
+# 219598  41055   6735 180678 
+vIntegerZero <- rowSums(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F] == 0)
 
 #######################################################################################
 ## 3.0 encode #########################################################################
 #######################################################################################
 # columns need encoding
-cols.needEncode <- names(ColUnique(dt.imputed[, cols.factor, with = F]))[ColUnique(dt.imputed[, cols.factor, with = F]) >= 20]
+cols.needEncode <- names(ColUnique(dt.imputed[, cols.factor[! cols.factor %in% cols.newFeatures], with = F]))[ColUnique(dt.imputed[, cols.factor[! cols.factor %in% cols.newFeatures], with = F]) >= 20]
 # factor encode
 dt.encode.factor <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.needEncode)
 setnames(dt.encode.factor, names(dt.encode.factor), paste(names(dt.encode.factor), "_factor", sep = ""))
 
-# numeric encod
+# numeric encode
 dt.encode.numeric <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.needEncode)
 dt.encode.numeric <- dt.encode.numeric[, lapply(.SD, as.numeric)]
 setnames(dt.encode.numeric, names(dt.encode.numeric), paste(names(dt.encode.numeric), "_numeric", sep = ""))
@@ -80,20 +87,25 @@ dim(dt.imputed)
 # [1] 228714    141
 
 #######################################################################################
-## 4.0 integer 0 ######################################################################
-#######################################################################################
-unlist(lapply(dt.imputed[, cols.integer, with = F], function(x) sum(x == 0, na.rm = T)))
-# v38    v62    v72   v129 
-# 219598  41055   6735 180678 
-vIntegerZero <- rowSums(dt.imputed[, cols.integer, with = F] == 0)
-cols.numeric <- c(cols.numeric, "vIntegerZero")
-dt.imputed[, vIntegerZero := vIntegerZero]
-
-#######################################################################################
 ## save ###############################################################################
 #######################################################################################
+dt.imputed[, c("vIntMean", "vIntMax", "vIntMin", "vIntSd"
+               , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
+               , "vFactorRankSum"
+               , "vIntegerZero") := list(vIntMean, vIntMax, vIntMin, vIntSd
+                                         , vNumMean, vNumMax, vNumMin, vNumSd
+                                         , vFactorRankSum
+                                         , vIntegerZero)]
+cols.numeric <- c(cols.numeric, "vIntMean", "vIntMax", "vIntMin", "vIntSd")
+cols.numeric <- c(cols.numeric, "vNumMean", "vNumMax", "vNumMin", "vNumSd")
+cols.numeric <- c(cols.numeric, "vFactorRankSum")
+cols.numeric <- c(cols.numeric, "vIntegerZero")
+cols.newFeatures <- c(cols.newFeatures, "vIntMean", "vIntMax", "vIntMin", "vIntSd"
+                      , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
+                      , "vFactorRankSum"
+                      , "vIntegerZero")
 dt.featureEngineered <- dt.imputed
-save(dt.featureEngineered, cols.factor, cols.numeric, cols.integer, file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_featureEngineered.RData")
+save(dt.featureEngineered, cols.factor, cols.numeric, cols.integer, cols.newFeatures, file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_featureEngineered.RData")
 
 
 
