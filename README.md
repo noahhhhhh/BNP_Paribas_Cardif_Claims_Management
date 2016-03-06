@@ -19,3 +19,5 @@ split %20 for validation, and prepare a watchlist for train and test set, set nu
 5. now i descrease the eta to 0.05, and leave program running then get the optimum num_round (where error rate start to increase in watchlist progress),  
 after these step you can get roughly good parameters (i dont claim best ones), then you can play around these parameters.  
 hope it helps
+
+# STEPS TO DO CORRESPONENCE AND CHAIN ANALYSIS (https://www.kaggle.com/c/bnp-paribas-cardif-claims-management/forums/t/19240/analysis-of-duplicate-variables-correlated-variables-large-post)

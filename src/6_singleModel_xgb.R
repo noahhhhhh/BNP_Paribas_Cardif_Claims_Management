@@ -38,7 +38,7 @@ for(i in 1:k){
                     , nthread = 8
                    , eta = .1
                    , min_child_weight = 5
-                   , max_depth = 12
+                   , max_depth = 11
                    , subsample = 1
                    , colsample_bytree = .2
                    , objective = "binary:logistic"
@@ -59,7 +59,8 @@ for(i in 1:k){
     result <- logLoss(getinfo(dval, "label"), pred.valid)
     vec.result[i] <- result
 }
-
-vec.result.raw <- vec.result # 11
+# max_depth = 11
+# [1] 0.4673935 0.4647636 0.4691213 0.4633835 0.4649215 0.4588940 0.4750696 0.4711140 0.4773479
+# [10] 0.4664173
 
 
