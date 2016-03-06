@@ -141,7 +141,17 @@ cols.newFeatures <- c(cols.newFeatures
                       , "vFactorRankSum"
                       , "vIntegerZero")
 dt.featureEngineered <- dt.imputed
-save(dt.featureEngineered, cols.factor, cols.numeric, cols.integer, cols.newFeatures, file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_featureEngineered.RData")
+
+cols.basicStats <- c("vIntMean", "vIntMax", "vIntMin", "vIntSd"
+                     , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
+                     , "vFactorRankSum")
+cols.analysis <- c("v71_v75", "v8_v25_v46_v54_v63_v105_pca")
+cols.zero <- c("vIntegerZero")
+
+save(dt.featureEngineered, cols.factor, cols.numeric, cols.integer
+     , cols.newFeatures
+     , cols.basicStats, cols.analysis, cols.zero
+     , file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_featureEngineered.RData")
 
 
 

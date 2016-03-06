@@ -28,7 +28,9 @@ dt.featureEngineered <- data.table(dt.featureEngineered[, !cols.factor, with = F
 ## save ###############################################################################
 #######################################################################################
 dt.preprocessed <- dt.featureEngineered
-save(dt.preprocessed, cols.factor, cols.numeric, cols.integer, cols.newFeatures, file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_preprocessed.RData")
+save(dt.preprocessed, cols.factor, cols.numeric, cols.integer, cols.newFeatures
+     , cols.basicStats, cols.analysis, cols.zero
+     , file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_preprocessed.RData")
 
 
 
