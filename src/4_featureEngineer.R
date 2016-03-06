@@ -82,7 +82,7 @@ pve.chain <- pca.var.chain/sum(pca.var.chain)
 plot(pve.chain[1:10] , xlab =" Principal Component ", ylab=" Proportion of
 Variance Explained ", ylim=c(0,1) ,type = 'b')
 
-plot(cumsum(pve.chain[1:10]), xlab=" Principal Component ", ylab ="Cumulative Proportion of 
+plot(cumsum(pve.chain[1:10]), xlab=" Principal Component ", ylab ="Cumulative Proportion of
      Variance Explained ", ylim=c(0,1) ,type = 'b')
 
 v8_v25_v46_v54_v63_v105_pca <- pc.all.chain[, 1]
@@ -117,21 +117,25 @@ dim(dt.imputed)
 #######################################################################################
 ## save ###############################################################################
 #######################################################################################
-dt.imputed[, c("v71_v75", "v8_v25_v46_v54_v63_v105_pca"
-               , "vIntMean", "vIntMax", "vIntMin", "vIntSd"
+dt.imputed[, c(
+                "v71_v75", "v8_v25_v46_v54_v63_v105_pca",
+               "vIntMean", "vIntMax", "vIntMin", "vIntSd"
                , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
                , "vFactorRankSum"
-               , "vIntegerZero") := list(v71_v75, v8_v25_v46_v54_v63_v105_pca
-                                         , vIntMean, vIntMax, vIntMin, vIntSd
+               , "vIntegerZero") := list(
+                                         v71_v75, v8_v25_v46_v54_v63_v105_pca,
+                                         vIntMean, vIntMax, vIntMin, vIntSd
                                          , vNumMean, vNumMax, vNumMin, vNumSd
                                          , vFactorRankSum
                                          , vIntegerZero)]
-cols.numeric <- c(cols.numeric, "v71_v75", "v8_v25_v46_v54_v63_v105_pca")
+cols.numeric <- c(cols.numeric, "v8_v25_v46_v54_v63_v105_pca")
+cols.factor <- c(cols.factor, "v71_v75")
 cols.numeric <- c(cols.numeric, "vIntMean", "vIntMax", "vIntMin", "vIntSd")
 cols.numeric <- c(cols.numeric, "vNumMean", "vNumMax", "vNumMin", "vNumSd")
 cols.numeric <- c(cols.numeric, "vFactorRankSum")
 cols.numeric <- c(cols.numeric, "vIntegerZero")
-cols.newFeatures <- c(cols.newFeatures, "v71_v75", "v8_v25_v46_v54_v63_v105_pca"
+cols.newFeatures <- c(cols.newFeatures
+                      , "v71_v75", "v8_v25_v46_v54_v63_v105_pca"
                       , "vIntMean", "vIntMax", "vIntMin", "vIntSd"
                       , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
                       , "vFactorRankSum"

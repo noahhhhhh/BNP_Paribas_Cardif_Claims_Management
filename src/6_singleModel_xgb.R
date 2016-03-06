@@ -22,12 +22,17 @@ dim(dt.train); dim(dt.valid); dim(dt.test)
 table(dt.train$target)
 table(dt.valid$target)
 
+dmx.train <- xgb.DMatrix(data = data.matrix(dt.train[, !c("ID", "target"), with = F]), label = dt.train$target)
+dmx.valid <- xgb.DMatrix(data = data.matrix(dt.valid[, !c("ID", "target"), with = F]), label = dt.valid$target)
+x.test <- data.matrix(dt.test[, !c("ID", "target"), with = F])
+
 #######################################################################################
-## 2.0 cross validate #################################################################
+## 2.0 cv #############################################################################
 #######################################################################################
 k <- 10
 folds <- createFolds(dt.train$target, k = k, list = F)
-vec.result <- rep(0, k)
+vec.result.dval <- rep(0, k)
+vec.result.valid <- rep(0, k)
 for(i in 1:k){
     f <- folds == i
     dval <- xgb.DMatrix(data = data.matrix(dt.train[f, !c("ID", "target"), with = F]), label = dt.train[f]$target)
@@ -35,12 +40,12 @@ for(i in 1:k){
     watchlist <- list(val = dval, train = dtrain)
     
     params <- list(booster = "gbtree"
-                    , nthread = 8
+                   , nthread = 8
                    , eta = .1
                    , min_child_weight = 5
                    , max_depth = 11
                    , subsample = 1
-                   , colsample_bytree = .2
+                   , colsample_bytree = 1
                    , objective = "binary:logistic"
                    , eval_metric = "logloss"
                    )
@@ -55,12 +60,16 @@ for(i in 1:k){
                      , print.every.n = 10
                      )
     
-    pred.valid <- predict(clf, dval)
-    result <- logLoss(getinfo(dval, "label"), pred.valid)
-    vec.result[i] <- result
+    pred.dval <- predict(clf, dval)
+    result.dval <- logLoss(getinfo(dval, "label"), pred.dval)
+    vec.result.dval[i] <- result.dval
+    
+    pred.valid <- predict(clf, dmx.valid)
+    result.valid <- logLoss(getinfo(dmx.valid, "label"), pred.valid)
+    vec.result.valid[i] <- result.valid
+    
 }
 # max_depth = 11
-# [1] 0.4673935 0.4647636 0.4691213 0.4633835 0.4649215 0.4588940 0.4750696 0.4711140 0.4773479
-# [10] 0.4664173
+hist(c(0.4673935, 0.4647636, 0.4691213, 0.4633835, 0.4649215, 0.4588940, 0.4750696, 0.4711140, 0.4773479, 0.4664173))
 
 
