@@ -22,3 +22,7 @@ after these step you can get roughly good parameters (i dont claim best ones), t
 hope it helps  
 
 ### STEPS TO DO CORRESPONENCE AND CHAIN ANALYSIS (https://www.kaggle.com/c/bnp-paribas-cardif-claims-management/forums/t/19240/analysis-of-duplicate-variables-correlated-variables-large-post)
+
+### SIMPLE WAY OF FEATURE SELECTION
+(http://penglab.janelia.org/proj/mRMR/)
+
