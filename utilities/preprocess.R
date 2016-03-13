@@ -162,21 +162,11 @@ Noise <- function(dt, noise_l = -.00001, noise_u = .00001, col_excl){
 ##  noms(a vector of characters): column names of nominal vars
 ##  ords(a vector of characters): column names of ordinal vars
 ## Return(list): output of a list of m imputation sets
-MyImpute <- function(dt, cols, impute_type = c("median", "-1", "amelia"), m, idvars, noms, ords){
+MyImpute <- function(dt, cols, impute_type = c("median", "amelia", num), m, idvars, noms, ords){
     ls.imputed <- list()
     if(impute_type == "median"){ # median impute
         require(randomForest)
         ls.imputed[[1]] <- na.roughfix(dt[, cols, with = F])
-        # set the new names
-        setnames(ls.imputed[[1]], cols, paste(cols, "toImputed", sep = ""))
-    } else if(impute_type == "-1"){ # -1 impute
-        # class <- unlist(lapply(dt[, cols, with = F], class))
-        # cols.factor <- names(class)[class == "factor"]
-        # cols.others <- names(class)[class != "factor"]
-        df.imputed <- as.data.frame(dt[, cols, with = F])
-        # as.data.frame(apply(df.imputed[, cols.factor], 2, as.character))[is.na(df.imputed[, cols.factor])] <- "-1"
-        df.imputed[is.na(df.imputed)] <- -1
-        ls.imputed[[1]] <- as.data.table(df.imputed)
         # set the new names
         setnames(ls.imputed[[1]], cols, paste(cols, "toImputed", sep = ""))
     } else if(impute_type == "amelia"){ # amelia impute
@@ -190,18 +180,47 @@ MyImpute <- function(dt, cols, impute_type = c("median", "-1", "amelia"), m, idv
                         , parallel = "multicore"
                         , ncpus = 8)
         ls.imputed <- a.out$imputations
-    }
+    } else { # -1 impute
+        # class <- unlist(lapply(dt[, cols, with = F], class))
+        # cols.factor <- names(class)[class == "factor"]
+        # cols.others <- names(class)[class != "factor"]
+        df.imputed <- as.data.frame(dt[, cols, with = F])
+        # as.data.frame(apply(df.imputed[, cols.factor], 2, as.character))[is.na(df.imputed[, cols.factor])] <- "-1"
+        df.imputed[is.na(df.imputed)] <- as.numeric(impute_type)
+        ls.imputed[[1]] <- as.data.table(df.imputed)
+        # set the new names
+        setnames(ls.imputed[[1]], cols, paste(cols, "toImputed", sep = ""))
+    } 
     
     return(ls.imputed)
 }
 
-
-
-
-
-
-
-
-
+############################################################################################
+## 8. VisNAs ###############################################################################
+############################################################################################
+# visualise NAs
+VisNAs <- function(dt){
+    dt <- train
+    library(readr)
+    for (f in names(train)) {
+        if (class(train[[f]])=="character") {
+            levels <- unique(train[[f]])
+            train[[f]] <- as.integer(factor(train[[f]], levels=levels))
+        }
+    }
+    
+    # make a table of missing values
+    library(mice)
+    missers <- md.pattern(train[, -c(1:2)])
+    View(missers)
+    
+    # plot missing values
+    library(VIM)
+    miceplot <- aggr(train[, -c(1:2)], col=c("dodgerblue","dimgray"),
+                     numbers=TRUE, combined=TRUE, border="gray50",
+                     sortVars=TRUE, ylabs=c("Missing Data Pattern"),
+                     labels=names(train[-c(1:2)]), cex.axis=.7,
+                     gap=3)
+}
 
 

@@ -6,6 +6,7 @@ A Kaggle competition
 2. [29/02/2016 - **Done**] try value counts as the categorical value
 3. [02/03/2016 - **not done yet**] understand and implement Laurae's post
 3. [06/03/2016 - **not done yet**] find a most important feature for sampling
+4. [11/03/2016 - **not done yet**] add noise
 
 ## 2.0 GREAT STUFF
 ### STEPS TO TUNE XGB (https://www.kaggle.com/c/bnp-paribas-cardif-claims-management/forums/t/19083/best-practices-for-parameter-tuning-on-models)
