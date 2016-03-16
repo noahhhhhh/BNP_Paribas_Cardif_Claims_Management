@@ -105,24 +105,29 @@ ConvertNonNumFactorToNumFactor <- function(dt, cols){
 ##  dt(data.table): a data table
 ##  cols(a vector of characters): name of targeted columns
 ## Return(data.table): output of a data table with the ordered numeric values
-ConvertNonNumFactorToOrderedNum <- function(dt, cols){
+ConvertNonNumFactorToOrderedNum <- function(dt.train, dt.test, cols){
     require(plyr)
     # get the list of tabular summary 
-    ls.table <- lapply(dt[, cols, with = F], table)
+    ls.table <- lapply(dt.train[, cols, with = F], table)
     # get the list of names of the tablular summary
     ls.names <- lapply(ls.table, function(x) names(x))
     colnames <- paste(cols, "_toOrderedNum", sep = "")
     # get the list of the ordred numeirc representing the tabluar summary
     ls.ordered <- lapply(ls.table, function(x)(frank(as.vector(x), ties.method = "dense")))
     
-    ls.replaced <- list()
+    ls.replaced.train <- list()
+    ls.replaced.test <- list()
     for (col in cols){
         n <- ls.names[[col]]
         o <- ls.ordered[[col]]
-        ls.replaced[[paste(col, "toOrderedNum", sep = "")]] <- mapvalues(dt[[col]], from = n, to = o)
+        ls.replaced.train[[paste(col, "toOrderedNum", sep = "")]] <- mapvalues(dt.train[[col]], from = n, to = o)
+        ls.replaced.test[[paste(col, "toOrderedNum", sep = "")]] <- mapvalues(dt.test[[col]], from = n, to = o)
+        # new level to be come 0 in dt.test
+        ls.replaced.test[[paste(col, "toOrderedNum", sep = "")]][grepl("[[:alpha:]]", ls.replaced.test[[paste(col, "toOrderedNum", sep = "")]])] <- 0
     }
-    dt.replaced <- as.data.table(lapply(ls.replaced, print))
-    return(dt.replaced)
+    dt.replaced.train <- as.data.table(lapply(ls.replaced.train, print))
+    dt.replaced.test <- as.data.table(lapply(ls.replaced.test, print))
+    return(list(dt.replaced.train, dt.replaced.test))
 }
 
 ############################################################################################
@@ -222,5 +227,33 @@ VisNAs <- function(dt){
                      labels=names(train[-c(1:2)]), cex.axis=.7,
                      gap=3)
 }
+
+############################################################################################
+## 9. ConvertNonNumFactorToSumOfTargets ####################################################
+############################################################################################
+ConvertNonNumFactorToSumOfTargets <- function(dt, cols, ind.train){
+    for(col in cols){
+        colname1 <- paste(col, "_Sum1", sep = "")
+        colname2 <- paste(col, "_Sum0", sep = "")
+        dt[, temp1 := sum(as.numeric(target[ind.train] == 1)), by = col]
+        dt[, temp0 := sum(as.numeric(target[ind.train] == 0)), by = col]
+        setnames(dt, names(dt), c(names(dt)[!names(dt) %in% c("temp1", "temp0")], c(colname1, colname2)))
+    }
+    return(dt)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

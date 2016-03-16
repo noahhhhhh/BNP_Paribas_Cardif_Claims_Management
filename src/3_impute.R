@@ -51,7 +51,7 @@ cols.numeric <- c(cols.numeric, c("vNaFactor", "vNaNumeric", "vNa"))
 cols.newFeatures <- c("vNaFactor", "vNaNumeric", "vNa")
 
 ## impute with median
-ls.imputed <- MyImpute(dt.explored, c(cols.na.numeric, cols.na.factor), impute_type = "-1")
+ls.imputed <- MyImpute(dt.explored, c(cols.na.numeric, cols.na.factor), impute_type = "-999")
 
 ## remove original vars and cbind the imputed vars
 dt.explored <- dt.explored[, names(dt.explored)[!names(dt.explored) %in% c(cols.na.numeric, cols.na.factor)] , with = F]

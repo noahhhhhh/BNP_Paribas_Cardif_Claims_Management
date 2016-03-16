@@ -25,6 +25,16 @@ dt.featureEngineered <- data.table(dt.featureEngineered[, !cols.factor, with = F
 # dt.featureEngineered[target != -1]
 
 #######################################################################################
+## 2.0 scale ##########################################################################
+#######################################################################################
+# pre.featureEngineered <- preProcess(dt.featureEngineered[, !c("ID", "target"), with = F]
+#                              , method = c("range")
+#                              , verbose = T)
+# dt.featureEngineered <- predict(pre.featureEngineered, dt.featureEngineered)
+
+
+
+#######################################################################################
 ## save ###############################################################################
 #######################################################################################
 dt.preprocessed <- dt.featureEngineered

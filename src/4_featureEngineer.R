@@ -11,27 +11,27 @@ load("../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_imputed.RData")
 #######################################################################################
 ## 1.0 add basic stats about a row ####################################################
 #######################################################################################
-## integer
-vIntMean <- rowMeans(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F])
-vIntMax <- apply(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F], 1, max)
-vIntMin <- apply(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F], 1, min)
-vIntSd <- apply(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F], 1, sd)
-
-## numeric
-vNumMean <- rowMeans(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F])
-vNumMax <- apply(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F], 1, max)
-vNumMin <- apply(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F], 1, min)
-vNumSd <- apply(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F], 1, sd)
+# ## integer
+# vIntMean <- rowMeans(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F])
+# vIntMax <- apply(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F], 1, max)
+# vIntMin <- apply(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F], 1, min)
+# vIntSd <- apply(dt.imputed[, cols.integer[! cols.integer %in% cols.newFeatures], with = F], 1, sd)
+# 
+# ## numeric
+# vNumMean <- rowMeans(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F])
+# vNumMax <- apply(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F], 1, max)
+# vNumMin <- apply(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F], 1, min)
+# vNumSd <- apply(dt.imputed[, cols.numeric[! cols.numeric %in% cols.newFeatures], with = F], 1, sd)
 
 ## factor
 # sum of ranking of individual factor out of range(dt.imputed$v..)
-dt.factorRank <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.factor[! cols.factor %in% cols.newFeatures])
-dt.factorRank <- dt.factorRank[, lapply(.SD, as.numeric)]
-pre.factorRank <- preProcess(dt.factorRank
-                             , method = c("range")
-                             , verbose = T)
-dt.factorRank.range <- predict(pre.factorRank, dt.factorRank)
-vFactorRankSum <- rowSums(dt.factorRank.range)
+# dt.factorRank <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.factor[! cols.factor %in% cols.newFeatures])
+# dt.factorRank <- dt.factorRank[, lapply(.SD, as.numeric)]
+# pre.factorRank <- preProcess(dt.factorRank
+#                              , method = c("range")
+#                              , verbose = T)
+# dt.factorRank.range <- predict(pre.factorRank, dt.factorRank)
+# vFactorRankSum <- rowSums(dt.factorRank.range)
 
 #######################################################################################
 ## 2.0 add integer 0 ##################################################################
@@ -91,64 +91,76 @@ dt.imputed[, c("v25toImputed", "v46toImputed", "v54toImputed", "v63toImputed", "
 cols.numeric <- cols.numeric[!cols.numeric %in% c("v25toImputed", "v46toImputed", "v54toImputed", "v63toImputed", "v105toImputed", "v8toImputed")]
 ## chain analysis to be continued
 
-#######################################################################################
-## 3.0 encode #########################################################################
-#######################################################################################
-# columns need encoding
-cols.needEncode <- names(ColUnique(dt.imputed[, cols.factor[! cols.factor %in% cols.newFeatures], with = F]))[ColUnique(dt.imputed[, cols.factor[! cols.factor %in% cols.newFeatures], with = F]) >= 20]
-# factor encode
-dt.encode.factor <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.needEncode)
-setnames(dt.encode.factor, names(dt.encode.factor), paste(names(dt.encode.factor), "_factor", sep = ""))
+# #######################################################################################
+# ## 3.0 factor to sum of targets #######################################################
+# #######################################################################################
+# # columns need encoding
+# cols.needEncode <- names(ColUnique(dt.imputed[, cols.factor[! cols.factor %in% cols.newFeatures], with = F]))[ColUnique(dt.imputed[, cols.factor[! cols.factor %in% cols.newFeatures], with = F]) > 10]
+# dt.imputed <- ConvertNonNumFactorToSumOfTargets(dt.imputed, cols.needEncode)
+# cols.numeric <- c(cols.numeric, paste0(cols.needEncode, "_Sum0"), paste0(cols.needEncode, "Sum1"))
 
-# numeric encode
-dt.encode.numeric <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.needEncode)
-dt.encode.numeric <- dt.encode.numeric[, lapply(.SD, as.numeric)]
-setnames(dt.encode.numeric, names(dt.encode.numeric), paste(names(dt.encode.numeric), "_numeric", sep = ""))
-
-# remove original vars and cbind the encoded vars
-dt.imputed <- dt.imputed[, names(dt.imputed)[!names(dt.imputed) %in% cols.needEncode], with = F]
-cols.factor <- cols.factor[!cols.factor %in% cols.needEncode]
-dt.imputed <- cbind(dt.imputed, dt.encode.factor, dt.encode.numeric)
-cols.factor <- c(cols.factor, names(dt.encode.factor))
-cols.numeric <- c(cols.numeric, names(dt.encode.numeric))
-dim(dt.imputed)
+#######################################################################################
+## 4.0 encode #########################################################################
+#######################################################################################
+# # columns need encoding
+# cols.needEncode <- names(ColUnique(dt.imputed[, cols.factor[! cols.factor %in% cols.newFeatures], with = F]))[ColUnique(dt.imputed[, cols.factor[! cols.factor %in% cols.newFeatures], with = F]) > 10]
+# # factor encode
+# dt.encode.factor <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.needEncode)
+# setnames(dt.encode.factor, names(dt.encode.factor), paste(names(dt.encode.factor), "_factor", sep = ""))
+# 
+# # numeric encode
+# dt.encode.numeric <- ConvertNonNumFactorToOrderedNum(dt.imputed, cols.needEncode)
+# dt.encode.numeric <- dt.encode.numeric[, lapply(.SD, as.numeric)]
+# setnames(dt.encode.numeric, names(dt.encode.numeric), paste(names(dt.encode.numeric), "_numeric", sep = ""))
+# 
+# # remove original vars and cbind the encoded vars
+# dt.imputed <- dt.imputed[, names(dt.imputed)[!names(dt.imputed) %in% cols.needEncode], with = F]
+# cols.factor <- cols.factor[!cols.factor %in% cols.needEncode]
+# dt.imputed <- cbind(dt.imputed, dt.encode.factor, dt.encode.numeric)
+# cols.factor <- c(cols.factor, names(dt.encode.factor))
+# cols.numeric <- c(cols.numeric, names(dt.encode.numeric))
+# dim(dt.imputed)
 # [1] 228714    141
 
 #######################################################################################
 ## save ###############################################################################
 #######################################################################################
 dt.imputed[, c(
-                "v71_v75", "v8_v25_v46_v54_v63_v105_pca",
-               "vIntMean", "vIntMax", "vIntMin", "vIntSd"
-               , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
-               , "vFactorRankSum"
-               , "vIntegerZero") := list(
-                                         v71_v75, v8_v25_v46_v54_v63_v105_pca,
-                                         vIntMean, vIntMax, vIntMin, vIntSd
-                                         , vNumMean, vNumMax, vNumMin, vNumSd
-                                         , vFactorRankSum
+                "v71_v75", "v8_v25_v46_v54_v63_v105_pca"
+               # , "vIntMean", "vIntMax", "vIntMin", "vIntSd"
+               # , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
+               # , "vFactorRankSum"
+               , "vIntegerZero"
+               ) := list(
+                                         v71_v75, v8_v25_v46_v54_v63_v105_pca
+                                         # , vIntMean, vIntMax, vIntMin, vIntSd
+                                         # , vNumMean, vNumMax, vNumMin, vNumSd
+                                         # , vFactorRankSum
                                          , vIntegerZero)]
 cols.numeric <- c(cols.numeric, "v8_v25_v46_v54_v63_v105_pca")
 cols.factor <- c(cols.factor, "v71_v75")
-cols.numeric <- c(cols.numeric, "vIntMean", "vIntMax", "vIntMin", "vIntSd")
-cols.numeric <- c(cols.numeric, "vNumMean", "vNumMax", "vNumMin", "vNumSd")
-cols.numeric <- c(cols.numeric, "vFactorRankSum")
+# cols.numeric <- c(cols.numeric, "vIntMean", "vIntMax", "vIntMin", "vIntSd")
+# cols.numeric <- c(cols.numeric, "vNumMean", "vNumMax", "vNumMin", "vNumSd")
+# cols.numeric <- c(cols.numeric, "vFactorRankSum")
 cols.numeric <- c(cols.numeric, "vIntegerZero")
 cols.newFeatures <- c(cols.newFeatures
                       , "v71_v75", "v8_v25_v46_v54_v63_v105_pca"
-                      , "vIntMean", "vIntMax", "vIntMin", "vIntSd"
-                      , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
-                      , "vFactorRankSum"
+                      # , "vIntMean", "vIntMax", "vIntMin", "vIntSd"
+                      # , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
+                      # , "vFactorRankSum"
                       , "vIntegerZero")
 dt.featureEngineered <- dt.imputed
 
-cols.basicStats <- c("vIntMean", "vIntMax", "vIntMin", "vIntSd"
-                     , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
-                     , "vFactorRankSum")
+cols.basicStats <- c(
+                    # "vIntMean", "vIntMax", "vIntMin", "vIntSd"
+                     # , "vNumMean", "vNumMax", "vNumMin", "vNumSd"
+                     # "vFactorRankSum"
+    )
 cols.analysis <- c("v71_v75", "v8_v25_v46_v54_v63_v105_pca")
 cols.zero <- c("vIntegerZero")
 
 save(dt.featureEngineered, cols.factor, cols.numeric, cols.integer
+     # , cols.needEncode
      , cols.newFeatures
      , cols.basicStats, cols.analysis, cols.zero
      , file = "../data/BNP_Paribas_Cardif_Claims_Management/RData/dt_featureEngineered.RData")
